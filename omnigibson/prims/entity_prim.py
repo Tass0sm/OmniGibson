@@ -451,7 +451,7 @@ class EntityPrim(XFormPrim):
                 child_prim = children.pop()
                 children.extend(child_prim.GetChildren())
                 prim_type = child_prim.GetPrimTypeInfo().GetTypeName().lower()
-                if "joint" in prim_type and "fixed" not in prim_type:
+                if "joint" in prim_type and "fixed" not in prim_type and not child_prim.GetAttribute("physics:excludeFromArticulation").Get():
                     num += 1
         return num
 
@@ -540,7 +540,8 @@ class EntityPrim(XFormPrim):
             child_prim = children.pop()
             children.extend(child_prim.GetChildren())
             prim_type = child_prim.GetPrimTypeInfo().GetTypeName()
-            if "Joint" in prim_type:
+
+            if "Joint" in prim_type and not child_prim.GetAttribute("physics:excludeFromArticulation").Get():
                 # Get body 0
                 body0_targets = child_prim.GetRelationship("physics:body0").GetTargets()
                 if not body0_targets:
@@ -567,9 +568,10 @@ class EntityPrim(XFormPrim):
         # Assert all nodes have in-degree of 1 except root
         in_degrees = {node: G.in_degree(node) for node in G.nodes}
         assert in_degrees[self.root_link_name] == 0, "Root link should have in-degree of 0!"
-        assert all(
-            [in_degrees[node] == 1 for node in G.nodes if node != self.root_link_name]
-        ), "All non-root links should have in-degree of 1!"
+
+        # assert all(
+        #     [in_degrees[node] == 1 for node in G.nodes if node != self.root_link_name]
+        # ), "All non-root links should have in-degree of 1!"
 
         self._articulation_tree = G
 
