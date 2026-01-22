@@ -436,6 +436,26 @@ class EntityPrim(XFormPrim):
         return self._n_dof
 
     @property
+    def n_driven_joints(self):
+        """
+        Returns:
+            int: Number of drivable joints owned by this articulation
+        """
+        if self.initialized:
+            num = len(self._joints)
+        else:
+            # Manually iterate over all links and check for any joints that are not fixed joints!
+            num = 0
+            children = list(self.prim.GetChildren())
+            while children:
+                child_prim = children.pop()
+                children.extend(child_prim.GetChildren())
+                prim_type = child_prim.GetPrimTypeInfo().GetTypeName().lower()
+                if "joint" in prim_type and "fixed" not in prim_type and child_prim.HasAPI(lazy.pxr.UsdPhysics.DriveAPI):
+                    num += 1
+        return num
+
+    @property
     def n_joints(self):
         """
         Returns:

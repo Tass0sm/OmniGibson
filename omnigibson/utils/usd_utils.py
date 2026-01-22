@@ -516,7 +516,7 @@ class GripperRigidContactAPIImpl(RigidContactAPIImpl):
         # 2 here is not the finger count, it's the number of items we will record contacts with, per finger.
         # e.g. it's N such that if the finger is touching more than N items at once, only the first N are recorded.
         # This number should very rarely go above 2.
-        return len(cls.get_column_filters()[0]) * 2
+        return len(cls.get_column_filters()[0]) * 8
 
 
 # Instantiate the GripperRigidContactAPI
